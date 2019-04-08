@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 
-from basic_blocks import ResidualBlock_for_attention_module as rb
-from basic_blocks import ResidualBlock
+from model.basic_blocks import ResidualBlock_for_attention_module as rb
+from model.basic_blocks import ResidualBlock
 
 class Mask(nn.Module):
     """
@@ -105,7 +105,7 @@ class Attention_Module(nn.Module):
         assert(out_trunk.shape == out_mask.shape)
 
         out = self.softmax_blocks(out_trunk + out_mask)
-        out = (1 + out) * out_trunck
+        out = (1 + out) * out_trunk
         out = self.last_blocks(out)
 
         return out
