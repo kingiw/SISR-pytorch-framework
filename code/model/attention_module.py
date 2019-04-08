@@ -74,17 +74,17 @@ class Attention_Module(nn.Module):
     The channel and the size of input and output of trunk branch have to be the same
     """
     def __init__(self, in_c, out_c, trunk=None):
-        self.first_residual_blocks = ResidualBlock(channel, channel)
+        self.first_residual_blocks = ResidualBlock(in_c, out_c)
 
         if trunk is not None:
             self.trunk_branches = trunk
         else:
             self.trunk_branches = nn.Sequential(
-                ResidualBlock(channel, channel),
-                ResidualBlock(channel, channel)
+                ResidualBlock(out_c, out_c),
+                ResidualBlock(out_c, out_c)
             )
 
-        self.mask_branches = Mask(channel)
+        self.mask_branches = Mask(out_c)
 
         self.softmax_blocks = nn.Sequential(
             nn.BatchNorm2d(out_c),
