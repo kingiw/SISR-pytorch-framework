@@ -1,5 +1,8 @@
 import os
 import torchvision
+import matplotlib.pyplot as plt 
+import numpy as np
+
 
 
 def save_image(img_tensor, path, filename_list, img_type='jpg'):
@@ -15,3 +18,10 @@ def save_image(img_tensor, path, filename_list, img_type='jpg'):
         save_filename = filename + '.' + img_type
         torchvision.utils.save_image(img_tensor[0], os.path.join(path, save_filename))
 
+
+def show_imgs(img_tensor):
+    """
+    img_tensor should be a 3d tensor, standing for RGB
+    """
+    npimg = img_tensor.cpu().numpy()
+    plt.imshow(np.transpose(npimg, (1,2,0)))
