@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
 
-from model.basic_blocks import ResidualBlock_for_attention_module as rb
-from model.basic_blocks import ResidualBlock
+from .basic_blocks import ResidualBlock
+from .basic_blocks import ResidualBlock_for_attention_module as rb
+
 
 class Mask(nn.Module):
     """
@@ -56,15 +57,17 @@ class Mask(nn.Module):
         out_softmax3 = self.softmax3_blocks(out_mpool3)
         
         # 14*12
-        out = nn.functional.interpolate(out_softmax3, scale_factor=2, mode='bilinear') + out_softmax2 + out_skip2
+        out = nn.functional.interpolate(out_softmax3, scale_factor=2, mode='bilinear', align_corners=False) + out_softmax2 + out_skip2
         
         out_softmax4 = self.softmax4_blocks(out)
 
         # 28*24
-        out = nn.functionnal.interpolate(out_softmax4, scale_factor=2, mode='bilinear') + out_softmax1 + out_skip1
+        out = nn.functional.interpolate(out_softmax4, scale_factor=2, mode='bilinear', align_corners=False) + out_softmax1 + out_skip1
         
         out_softmax5 = self.softmax5_blocks(out)
-        out = nn.functionnal.interpolate(out_softmax5, scale_factor=2, mode='bilinear')
+
+        # Not use the last upsample
+        # out = nn.functional.interpolate(out_softmax5, scale_factor=2, mode='bilinear',  align_corners=False)
         
         return out
 
@@ -74,6 +77,8 @@ class Attention_Module(nn.Module):
     The channel and the size of input and output of trunk branch have to be the same
     """
     def __init__(self, in_c, out_c, trunk=None):
+        super(Attention_Module, self).__init__()
+
         self.first_residual_blocks = ResidualBlock(in_c, out_c)
 
         if trunk is not None:
@@ -95,13 +100,15 @@ class Attention_Module(nn.Module):
             nn.Conv2d(out_c, out_c, kernel_size=1, stride=1, bias=False),
             nn.Sigmoid()
         )
-        self.last_blocks = ResidualBlock(in_c, out_c)
+        self.last_blocks = ResidualBlock(out_c, out_c)
 
     def forward(self, x):
         x = self.first_residual_blocks(x)
         out_trunk = self.trunk_branches(x)
         out_mask = self.mask_branches(x)
 
+        print("trunk shape", out_trunk.shape)
+        print("mask shape", out_mask.shape)
         assert(out_trunk.shape == out_mask.shape)
 
         out = self.softmax_blocks(out_trunk + out_mask)
@@ -109,4 +116,3 @@ class Attention_Module(nn.Module):
         out = self.last_blocks(out)
 
         return out
-        
