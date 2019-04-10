@@ -1,11 +1,12 @@
 import utils
 import logging
+import torch
 
 logger = logging.getLogger('base')
 
 
 class Trainer():
-    def __init__(self, args, train_loader, val_loader, model, loss, optimizer):
+    def __init__(self, args, train_loader, val_loader, model, loss):
         self.args = args
         self.train_loader = train_loader
         self.val_loader = val_loader
@@ -26,11 +27,10 @@ class Trainer():
         timer_data, timer_model = utils.timer(), utils.timer()
         self.model.train()
         while 1:
-            for batch, (name, lr, hr) in numerate(self.train_loader):
+            for batch, (name, lr, hr) in enumerate(self.train_loader):
 
                 if (not self.args.cpu) and self.args.n_GPUs > 0:
                     lr, hr = lr.cuda(), hr.cuda()
-
                 self.iter += 1
                 self.scheduler.last_epoch = self.iter
                 logger.info(
@@ -58,30 +58,33 @@ class Trainer():
                     s = ""
                     for l in losses:
                         s += '{}: {:4e}'.format(l['type'], l['loss'])
-                    s += "Total: {:4e}".format(loss.item())
+                    s += " Total: {:4e}".format(loss.item())
                     logger.info(s)
 
                 if self.iter % self.args.save_every == 0:
                     logger.info('Saving model and optimizer...')
-                    torch.save(self.model.state_dict(), "../experiment/{}/model/{}.pth".format(self.args.name, self.iter))
-                    torch.save(self.optimizer.state_dict(), "../experiment/{}/optimizer/{}.pth".format(self.args.name, self.iter))
+                    torch.save(self.model.state_dict(), "../experiments/{}/model/{}.pth".format(self.args.name, self.iter))
+                    torch.save(self.optimizer.state_dict(), "../experiments/{}/optimizer/{}.pth".format(self.args.name, self.iter))
                 
                 if self.iter % self.args.val_every == 0:
-                    test()
+                    self.test()
 
                 if self.iter > self.args.niters:
                     logger.info('End of trainning')
-                    torch.save(self.model.state_dict(), "../experiment/{}/model/latest.pth".format(self.args.name, self.iter))
+                    torch.save(self.model.state_dict(), "../experiments/{}/model/latest.pth".format(self.args.name, self.iter))
                     return
             
     def test(self):
+        """
+        Only support for default batch_size = 1
+        I'll update this function later
+        """
         self.model.eval()
         logger.info('Evaluating...')
         timer_test = utils.timer()
+        name_list = []
+        saved_img = []
         with torch.no_grad():
-            name_list = []
-            saved_img = []
-            
             # losses = [{'type': xxx, 'loss': xxx, 'weight':xxx}]
             avg_loss = 0
             avg_losses = []
@@ -98,13 +101,14 @@ class Trainer():
                         avg_losses[k]['loss'] += losses[k]['loss']
                 avg_loss += loss
 
-                if name[:3] == "000":
-                    name_list.append("{}_{}_{}".format(name, self.args.name, self.iter))
-                    saved_img.append(sr)
-
+                # # if name[:3] == "000":
+                # if name[0] == "0":
+                name_list.append("{}_{}_{}".format(name[0], self.args.name, self.iter))
+                saved_img.append(sr[0])
         s = ""
         for l in avg_losses:
             s += '{}: {:4e}'.format(l['type'], l['loss'].item() / len(self.val_loader))
-            s += "Total: {:4e}".format(avg_loss.item() / len(self.val_loader))
+            s += " Total: {:4e}".format(avg_loss.item() / len(self.val_loader))
         logger.info(s)
-        utils.save_image(saved_img, '../experiments/results', name_list)
+        print(name_list)
+        utils.save_image(saved_img, '../experiments/{}/results'.format(self.args.name), name_list)

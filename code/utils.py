@@ -5,6 +5,7 @@ import numpy as np
 import logging
 import os
 from datetime import datetime
+import time
 
 import torch
 import torch.optim as optim
@@ -33,6 +34,10 @@ class timer():
         
     def reset(self):
         self.acc = 0
+
+def make_directory(path):
+    if not os.path.isdir(path):
+        os.mkdir(path)
 
 def get_timestamp():
     '''
@@ -76,7 +81,7 @@ def make_optimizer(args, model):
         NotImplementedError('Optimizer [{:s}] not recognized.'.format(args.optimizer))
 
     kwargs['lr'] = args.lr
-    kwarts['weight_decay']  = args.weight_decay
+    kwargs['weight_decay']  = args.weight_decay
 
     return optimizer_function(trainable, **kwargs)
 
@@ -99,18 +104,16 @@ def make_scheduler(args, optimizer):
     return scheduler
 
 
-def save_image(img_tensor, path, filename_list, img_type='jpg'):
+def save_image(img_tensor_list, path, filename_list, img_type='jpg'):
     """
-    img_tensor -- batch * channel * H * W
+    img_tensor_list -- a list of Tensor(channel * H * W)
     path -- path of saving directory
     filename_list -- a list with a **batch** number of name
     """
-    if len(img_tensor.shape) == 3: # No batch dimension
-        img_tensor = img_tensor.unsqueeze(0)
-    assert(img_tensor.shape[0] == len(filename_list))
-    for i, filename_list in enumerate(filename_list):
+    assert(len(img_tensor_list) == len(filename_list))
+    for i, filename in enumerate(filename_list):
         save_filename = filename + '.' + img_type
-        torchvision.utils.save_image(img_tensor[0], os.path.join(path, save_filename))
+        torchvision.utils.save_image(img_tensor_list[i], os.path.join(path, save_filename))
 
 
 def show_img(img_tensor):

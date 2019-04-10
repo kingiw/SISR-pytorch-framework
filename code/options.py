@@ -12,10 +12,10 @@ parser.add_argument('--use_tensorboard', action='store_true', default=True)
 
 # Data specifications
 # parser.add_argument('--train_data_path', type=str, default='...')
-parser.add_argument('--train_HR', type=str, default='...', help='path to HR image of training set')
-parser.add_argument('--train_LR', type=str, default='...', help='path to LR image of training set')
-parser.add_argument('--val_HR', type=str, default='...', help='path to HR image of validation set')
-parser.add_argument('--val_LR', type=str, default='...', help='path to LR image of validation set')
+parser.add_argument('--train_HR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/HR_Small', help='path to HR image of training set')
+parser.add_argument('--train_LR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/LR_Small', help='path to LR image of training set')
+parser.add_argument('--val_HR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALHR_Small', help='path to HR image of validation set')
+parser.add_argument('--val_LR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALLR_Small', help='path to LR image of validation set')
 parser.add_argument('--rgb_range', type=int, default=1, help='maximum value of RGB')
 
 # Model specifications
@@ -50,9 +50,9 @@ parser.add_argument('--precision', type=str, default='single',
 # Training specifications
 parser.add_argument('--reset', action='store_true',
                     help='reset the training')
-parser.add_argument('--val_every', type=int, default=1000, help='do validation per N iter')
-parser.add_argument('--save_every', type=int, default=1000, help='save per N iter')
-parser.add_argument('--iters', type=int, default=30000, help='number of epochs to train')
+parser.add_argument('--val_every', type=int, default=3, help='do validation per N iter')
+parser.add_argument('--save_every', type=int, default=3, help='save per N iter')
+parser.add_argument('--niters', type=int, default=30000, help='number of epochs to train')
 parser.add_argument('--batch_size', type=int, default=16, help='input batch size for training')
 
 # Optimization specifications
@@ -80,8 +80,7 @@ parser.add_argument('--weight_decay', type=float, default=0,
 
 # Loss specifications
 parser.add_argument('--loss', type=str, default='1*L1', help='loss function configuration, you should specify like: w1*L1+w2*FaceSphere+...')
-# parser.add_argument('--skip_threshold', type=float, default='1e6',
-                    help='skipping batch that has large error')
+# parser.add_argument('--skip_threshold', type=float, default='1e6', help='skipping batch that has large error')
 
 # Log specifications
 parser.add_argument('--resume', type=int, default=0,
@@ -90,7 +89,7 @@ parser.add_argument('--print_model', action='store_true',
                     help='print model')
 parser.add_argument('--save_models', action='store_true',
                     help='save all intermediate models')
-parser.add_argument('--print_every', type=int, default=100,
+parser.add_argument('--print_every', type=int, default=1,
                     help='how many batches to wait before logging training status')
 parser.add_argument('--save_results', action='store_true',
                     help='save output results')

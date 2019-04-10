@@ -107,8 +107,8 @@ class Attention_Module(nn.Module):
         out_trunk = self.trunk_branches(x)
         out_mask = self.mask_branches(x)
 
-        print("trunk shape", out_trunk.shape)
-        print("mask shape", out_mask.shape)
+        # print("trunk shape", out_trunk.shape)
+        # print("mask shape", out_mask.shape)
         assert(out_trunk.shape == out_mask.shape)
 
         out = self.softmax_blocks(out_trunk + out_mask)

@@ -14,9 +14,7 @@ class Loss(nn.Module):
         self.use_tensorboard = args.use_tensorboard
         if self.use_tensorboard:
             from tensorboardX import SummaryWriter
-            if not os.path.isdir(os.path.join('../tb_logger/' + args.name)):
-                os.mkdir(os.path.join('../tb_logger/' + args.name))
-            self.tb_logger = SummaryWriter(log_dir=os.path.join('../tb_logger/' + args.name))
+            self.tb_logger = SummaryWriter(log_dir=os.path.join('../experiments/{}/tb_logger/'.format(args.name)))
 
         # self.loss contains the sub-loss function infomation
         self.loss = []
@@ -34,17 +32,20 @@ class Loss(nn.Module):
             self.loss.append({
                 'type': loss_type,
                 'weight': float(weight),
+                # 'function': loss_function.cuda() if args.n_GPUs > 0 else loss_function
                 'function': loss_function
             })
     
         for l in self.loss:
-                logger.info('{:.3f}*{}'.format(l['weight'], l['type']))
-             
+            logger.info('{:.3f}*{}'.format(l['weight'], l['type']))
         
         logger.info('Loss function preparation done.')
+
     def forward(self, fake, real, step):
         losses = []
         loss_sum = torch.zeros(1)
+        if self.n_GPUs > 0:
+            loss_sum = loss_sum.cuda()
         for i, l in enumerate(self.loss):
             loss = l['function'](fake, real)
             losses.append({
