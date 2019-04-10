@@ -28,3 +28,23 @@ class Dataset(data.Dataset):
 
     def __len__(self):
         return len(self.filelist)
+
+class LRHR_Dataset(data.Dataset):
+    """
+    LR image and HR image should have the same filename
+    """
+    def __init__(self, LR_path, HR_path, transform=None):
+        super(LRHR_Dataset, self).__init__()
+        self.LR_set = Dataset(LR_path, transform)
+        self.HR_set = Dataset(HR_path, transform)
+        assert(len(self.LR_set) == len(self.HR_set))
+
+    def __getitem__(self, idx):
+        img_name, HR = self.HR_set[idx]
+        _, LR = self.LR_set[idx]
+        return img_name, LR, HR
+    
+    def __len__(self):
+        return len(self.LR_set)
+
+

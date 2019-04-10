@@ -2,14 +2,20 @@ import argparse
 
 parser = argparse.ArgumentParser(description='No description')
 
+parser.add_argument('--name', type=str, default='unknown')
+
 # Hardware specifications
 parser.add_argument('--cpu', action='store_true', help='use cpu only')
 parser.add_argument('--n_GPUs', type=int, default=1, help='number of GPUs')
 parser.add_argument('--seed', type=int, default=1, help='random seed')
+parser.add_argument('--use_tensorboard', action='store_true', default=True)
 
 # Data specifications
-parser.add_argument('--train_data_path', type=str, default='...')
-parser.add_argument('--val_data_path', type=str, default='...')
+# parser.add_argument('--train_data_path', type=str, default='...')
+parser.add_argument('--train_HR', type=str, default='...', help='path to HR image of training set')
+parser.add_argument('--train_LR', type=str, default='...', help='path to LR image of training set')
+parser.add_argument('--val_HR', type=str, default='...', help='path to HR image of validation set')
+parser.add_argument('--val_LR', type=str, default='...', help='path to LR image of validation set')
 parser.add_argument('--rgb_range', type=int, default=1, help='maximum value of RGB')
 
 # Model specifications
@@ -17,9 +23,11 @@ parser.add_argument('--model', default='RRDB_enhanced')
 parser.add_argument('--pre_train', type=str, default='...', help='pre-trained model directory')
 
 
-# RRDB_enhanced specifications
-parser.add_argument('--n_RRDB', type=int, default=5, help='Number of RRDBs in each attention module')
-parser.add_argument('--n_attention_module', type=int, default=4,  help='Number of attention modules')
+# RRDB_enhanced specifications (args name start with 'a')
+parser.add_argument('--a_nb', type=int, default=5, help='Number of RRDB in a trunk branch')
+parser.add_argument('--a_na', type=int, default=4,  help='Number of attention modules')
+parser.add_argument('--a_nf', type=int, default=64, help='Number of channel of the extrated feature by RRDB')
+
 
 # RCAN specifications
 parser.add_argument('--act', type=str, default='relu',
@@ -45,7 +53,7 @@ parser.add_argument('--test_every', type=int, default=1000,
                     help='do test per every N batches')
 parser.add_argument('--iters', type=int, default=30000,
                     help='number of epochs to train')
-parser.add_argument('--batch_size', type=int, default=16,
+parser.add_argument('--batch_size', type=int, default=2,
                     help='input batch size for training')
 
 # Optimization specifications
@@ -72,8 +80,7 @@ parser.add_argument('--weight_decay', type=float, default=0,
                     help='weight decay')
 
 # Loss specifications
-parser.add_argument('--loss', type=str, default='1*L1',
-                    help='loss function configuration')
+parser.add_argument('--loss', type=str, default='1*L1', help='loss function configuration, you should specify like: w1*L1+w2*PI+...')
 parser.add_argument('--skip_threshold', type=float, default='1e6',
                     help='skipping batch that has large error')
 

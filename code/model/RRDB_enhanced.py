@@ -1,4 +1,4 @@
-# RDDB_Net + Attention Module
+# RRDB_Net + Attention Module
 
 
 import torch
@@ -6,19 +6,26 @@ import torch.nn as nn
 import model.basic_blocks as B
 from  .attention_module import Attention_Module
 
-class RDDB_enhanced(nn.Module):
+class RRDB_enhanced(nn.Module):
     """
-    nb -- Number of RDDB in a trunk branch
+    nb -- Number of RRDB in a trunk branch
     na -- Number of Attention Module
-    nf -- Number of channel of the extrated feature by RDDB
+    nf -- Number of channel of the extrated feature by RRDB
 
-    norm_type - normalization for RDDB
-    act_type - Activation function for RDDB
-    mode --  mode for RDDB (CNA, NAC, CNAC)
+    norm_type - normalization for RRDB
+    act_type - Activation function for RRDB
+    mode --  mode for RRDB (CNA, NAC, CNAC)
     """
-    def __init__(self, nb=1, nf=64, na=2, norm_type=None, act_type='leakyrelu', mode='CNA'):
+    def __init__(self, args, norm_type=None, act_type='leakyrelu', mode='CNA'):
+    # def __init__(self, nb=1, nf=64, na=2, norm_type=None, act_type='leakyrelu', mode='CNA'):
 
-        super(RDDB_enhanced, self).__init__()
+        super(RRDB_enhanced, self).__init__()
+
+        nb = args.a_nb
+        na = args.a_na
+        nf = args.a_nf
+    
+
         self.fea_conv = B.conv_block(3, nf, kernel_size=3, norm_type=None, act_type=None)
         self.na = na
         core = []
