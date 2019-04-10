@@ -20,7 +20,8 @@ parser.add_argument('--rgb_range', type=int, default=1, help='maximum value of R
 
 # Model specifications
 parser.add_argument('--model', default='RRDB_enhanced')
-parser.add_argument('--pre_train', type=str, default='...', help='pre-trained model directory')
+parser.add_argument('--pre_train_model', type=str, default='...', help='pre-trained model path')
+parser.add_argument('--pre_train_optimizer', type=str, default='...', help='pre-trained optimizer path')
 
 
 # RRDB_enhanced specifications (args name start with 'a')
@@ -49,19 +50,17 @@ parser.add_argument('--precision', type=str, default='single',
 # Training specifications
 parser.add_argument('--reset', action='store_true',
                     help='reset the training')
-parser.add_argument('--test_every', type=int, default=1000,
-                    help='do test per every N batches')
-parser.add_argument('--iters', type=int, default=30000,
-                    help='number of epochs to train')
-parser.add_argument('--batch_size', type=int, default=2,
-                    help='input batch size for training')
+parser.add_argument('--val_every', type=int, default=1000, help='do validation per N iter')
+parser.add_argument('--save_every', type=int, default=1000, help='save per N iter')
+parser.add_argument('--iters', type=int, default=30000, help='number of epochs to train')
+parser.add_argument('--batch_size', type=int, default=16, help='input batch size for training')
 
 # Optimization specifications
 parser.add_argument('--lr', type=float, default=1e-4,
                     help='learning rate')
 parser.add_argument('--lr_decay', type=int, default=200,
                     help='learning rate decay per N epochs')
-parser.add_argument('--decay_type', type=str, default='step',
+parser.add_argument('--decay_type', type=str, default='step_300_1000',
                     help='learning rate decay type')
 parser.add_argument('--gamma', type=float, default=0.5,
                     help='learning rate decay factor for step decay')
@@ -80,8 +79,8 @@ parser.add_argument('--weight_decay', type=float, default=0,
                     help='weight decay')
 
 # Loss specifications
-parser.add_argument('--loss', type=str, default='1*L1', help='loss function configuration, you should specify like: w1*L1+w2*PI+...')
-parser.add_argument('--skip_threshold', type=float, default='1e6',
+parser.add_argument('--loss', type=str, default='1*L1', help='loss function configuration, you should specify like: w1*L1+w2*FaceSphere+...')
+# parser.add_argument('--skip_threshold', type=float, default='1e6',
                     help='skipping batch that has large error')
 
 # Log specifications

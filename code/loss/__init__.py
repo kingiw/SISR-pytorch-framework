@@ -44,11 +44,17 @@ class Loss(nn.Module):
         logger.info('Loss function preparation done.')
     def forward(self, fake, real, step):
         losses = []
+        loss_sum = torch.zeros(1)
         for i, l in enumerate(self.loss):
             loss = l['function'](fake, real)
-            effective_loss = l['weight'] * loss
-            losses.append(effective_loss)
+            losses.append({
+                'loss': loss,
+                'type': l['type'],
+                'weight': l['weight']
+            })
+            loss_sum = l['weight'] * loss + loss_sum
             if self.use_tensorboard:
                 self.tb_logger.add_scalar(l['type'], loss.item(), step)
-        loss_sum = sum(losses)
-        return loss_sum
+        
+        
+        return loss_sum, losses

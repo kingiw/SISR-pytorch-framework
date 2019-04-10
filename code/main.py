@@ -8,6 +8,7 @@ import os
 import logging
 from model import create_model
 from loss import Loss
+from trainer import Trainer
 
 # from trainer import Trainer
 
@@ -28,12 +29,10 @@ logger = logging.getLogger('base')
 # Model
 model = create_model(args)
 
-criteria = loss.Loss(args)
-# x = torch.randn([1, 3, 28, 24])
-# y = model(x)
-# print(y.shape)
+loss = loss.Loss(args)
 
-loss = Loss()
+trainer = Tranier(args, train_dataloader, val_dataloader, model, loss)
+
 
 # for filenames, LR, HR in train_dataloader:
 #     print(filenames)

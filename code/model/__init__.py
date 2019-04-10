@@ -11,7 +11,7 @@ def create_model(args):
     else:
         raise NotImplementedError('Model [{:s}] not recognized.'.format(model))
     m = M(args)
-    m.load_state_dict(torch.load(args.pre_train))
+    
     
     if not args.cpu:
         if args.n_GPUs > 0:
