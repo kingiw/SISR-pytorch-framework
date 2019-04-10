@@ -17,19 +17,20 @@ torch.manual_seed(args.seed)
 for s in ['', 'model', 'optimizer', 'tb_logger', 'log', 'results']:
     utils.make_directory('../experiments/{}/{}'.format(args.name,s))
 
-print(args.use_tensorboard)
 
 # Set up the training / validation dataloader
 train_set = LRHR_Dataset(args.train_LR, args.train_HR)
-train_dataloader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
+train_dataloader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 val_set = LRHR_Dataset(args.val_LR, args.val_HR)
-val_dataloader = DataLoader(val_set, batch_size=1, shuffle=False)
+val_dataloader = DataLoader(val_set, batch_size=1, shuffle=False, num_workers=args.num_workers)
 
 # Logger
 if not os.path.isdir('../experiments/' + args.name):
     os.mkdir('../experiments/' + args.name)
 utils.setup_logger('base', '../experiments/{}/log'.format(args.name), utils.get_timestamp(), screen=True)
 logger = logging.getLogger('base')
+
+logger.info(args)
 
 my_model = create_model(args)
 my_loss = Loss(args)

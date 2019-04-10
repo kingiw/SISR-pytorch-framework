@@ -6,16 +6,17 @@ parser.add_argument('--name', type=str, default='unknown')
 
 # Hardware specifications
 parser.add_argument('--cpu', action='store_true', help='use cpu only')
-parser.add_argument('--n_GPUs', type=int, default=1, help='number of GPUs')
+parser.add_argument('--n_GPUs', type=int, default=4, help='number of GPUs')
 parser.add_argument('--seed', type=int, default=1, help='random seed')
 parser.add_argument('--use_tensorboard', action='store_true', default=True)
+parser.add_argument('--num_workers', type=int, default=24)
 
 # Data specifications
 # parser.add_argument('--train_data_path', type=str, default='...')
-parser.add_argument('--train_HR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/HR_Small', help='path to HR image of training set')
-parser.add_argument('--train_LR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/LR_Small', help='path to LR image of training set')
-parser.add_argument('--val_HR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALHR_Small', help='path to HR image of validation set')
-parser.add_argument('--val_LR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALLR_Small', help='path to LR image of validation set')
+parser.add_argument('--train_HR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/HR', help='path to HR image of training set')
+parser.add_argument('--train_LR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/LR', help='path to LR image of training set')
+parser.add_argument('--val_HR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALHR', help='path to HR image of validation set')
+parser.add_argument('--val_LR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALLR', help='path to LR image of validation set')
 parser.add_argument('--rgb_range', type=int, default=1, help='maximum value of RGB')
 
 # Model specifications
@@ -50,17 +51,17 @@ parser.add_argument('--precision', type=str, default='single',
 # Training specifications
 parser.add_argument('--reset', action='store_true',
                     help='reset the training')
-parser.add_argument('--val_every', type=int, default=3, help='do validation per N iter')
-parser.add_argument('--save_every', type=int, default=3, help='save per N iter')
-parser.add_argument('--niters', type=int, default=30000, help='number of epochs to train')
-parser.add_argument('--batch_size', type=int, default=16, help='input batch size for training')
+parser.add_argument('--val_every', type=int, default=1000, help='do validation per N iter')
+parser.add_argument('--save_every', type=int, default=1000, help='save per N iter')
+parser.add_argument('--niters', type=int, default=12000, help='number of epochs to train')
+parser.add_argument('--batch_size', type=int, default=80, help='input batch size for training')
 
 # Optimization specifications
 parser.add_argument('--lr', type=float, default=1e-4,
                     help='learning rate')
 parser.add_argument('--lr_decay', type=int, default=200,
                     help='learning rate decay per N epochs')
-parser.add_argument('--decay_type', type=str, default='step_300_1000',
+parser.add_argument('--decay_type', type=str, default='step_3000_6000',
                     help='learning rate decay type')
 parser.add_argument('--gamma', type=float, default=0.5,
                     help='learning rate decay factor for step decay')
@@ -80,19 +81,10 @@ parser.add_argument('--weight_decay', type=float, default=0,
 
 # Loss specifications
 parser.add_argument('--loss', type=str, default='1*L1', help='loss function configuration, you should specify like: w1*L1+w2*FaceSphere+...')
-# parser.add_argument('--skip_threshold', type=float, default='1e6', help='skipping batch that has large error')
 
-# Log specifications
-parser.add_argument('--resume', type=int, default=0,
-                    help='resume from specific checkpoint')
-parser.add_argument('--print_model', action='store_true',
-                    help='print model')
-parser.add_argument('--save_models', action='store_true',
-                    help='save all intermediate models')
-parser.add_argument('--print_every', type=int, default=1,
-                    help='how many batches to wait before logging training status')
-parser.add_argument('--save_results', action='store_true',
-                    help='save output results')
+
+# Other specifications
+parser.add_argument('--print_every', type=int, default=100, help='how many batches to wait before logging training status')
 
 args = parser.parse_args()
 

@@ -23,20 +23,19 @@ class Trainer():
         self.iter = 0
 
     def train(self):
+        self.model.train()
         self.scheduler.step()
         timer_data, timer_model = utils.timer(), utils.timer()
-        self.model.train()
+        timer_model.hold()
+
         while 1:
             for batch, (name, lr, hr) in enumerate(self.train_loader):
-
+                
                 if (not self.args.cpu) and self.args.n_GPUs > 0:
                     lr, hr = lr.cuda(), hr.cuda()
                 self.iter += 1
-                self.scheduler.last_epoch = self.iter
-                logger.info(
-                    'Iter {}, lr = {:.2e}'.format(self.iter, self.scheduler.get_lr()[0])
-                )
                 
+                self.scheduler.last_epoch = self.iter
                 timer_data.hold()
                 timer_model.tic()
                 
@@ -49,18 +48,20 @@ class Trainer():
                 self.optimizer.step()
 
                 timer_model.hold()
+                
                 if self.iter % self.args.print_every == 0:
-                    logger.info('Iter {}, {:.1f}+{:.1f}\n'.format(
+                    logger.info('Iter {}, Lr: {:.2e}     {:.1f}s+{:.1f}s'.format(
                         self.iter,
+                        self.scheduler.get_lr()[0],
                         timer_model.release(),
                         timer_data.release()
                     ))
                     s = ""
                     for l in losses:
-                        s += '{}: {:4e}'.format(l['type'], l['loss'])
-                    s += " Total: {:4e}".format(loss.item())
+                        s += '{}: {:.4e}'.format(l['type'], l['loss'])
+                    s += " Total: {:.4e}".format(loss.item())
                     logger.info(s)
-
+                
                 if self.iter % self.args.save_every == 0:
                     logger.info('Saving model and optimizer...')
                     torch.save(self.model.state_dict(), "../experiments/{}/model/{}.pth".format(self.args.name, self.iter))
@@ -73,6 +74,8 @@ class Trainer():
                     logger.info('End of trainning')
                     torch.save(self.model.state_dict(), "../experiments/{}/model/latest.pth".format(self.args.name, self.iter))
                     return
+                timer_data.tic()
+                
             
     def test(self):
         """
@@ -82,6 +85,7 @@ class Trainer():
         self.model.eval()
         logger.info('Evaluating...')
         timer_test = utils.timer()
+        timer_test.tic()
         name_list = []
         saved_img = []
         with torch.no_grad():
@@ -101,14 +105,14 @@ class Trainer():
                         avg_losses[k]['loss'] += losses[k]['loss']
                 avg_loss += loss
 
-                # # if name[:3] == "000":
-                # if name[0] == "0":
-                name_list.append("{}_{}_{}".format(name[0], self.args.name, self.iter))
-                saved_img.append(sr[0])
+                if name[0][:3] == "000":
+                    name_list.append("{}_{}_{}".format(name[0], self.args.name, self.iter))
+                    saved_img.append(sr[0])
+        timer_test.hold()
         s = ""
         for l in avg_losses:
-            s += '{}: {:4e}'.format(l['type'], l['loss'].item() / len(self.val_loader))
-            s += " Total: {:4e}".format(avg_loss.item() / len(self.val_loader))
+            s += '{}: {:.4e}'.format(l['type'], l['loss'].item() / len(self.val_loader))
+            s += " Total: {:.4e}".format(avg_loss.item() / len(self.val_loader))
+            s += " Time Elapsed: {:.1f}".format(timer_test.release())
         logger.info(s)
-        print(name_list)
         utils.save_image(saved_img, '../experiments/{}/results'.format(self.args.name), name_list)
