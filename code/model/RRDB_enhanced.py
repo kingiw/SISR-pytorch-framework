@@ -24,7 +24,6 @@ class RRDB_enhanced(nn.Module):
         nb = args.a_nb
         na = args.a_na
         nf = args.a_nf
-    
 
         self.fea_conv = B.conv_block(3, nf, kernel_size=3, norm_type=None, act_type=None)
         self.na = na
@@ -36,7 +35,12 @@ class RRDB_enhanced(nn.Module):
             trunk = B.sequential(B.ShortcutBlock(B.sequential(*rb_blocks, LR_conv)))
             core.append(Attention_Module(nf, nf, trunk=trunk))
             core.append(B.ResidualBlock(nf, nf))
-        self.core = B.sequential(*core)
+
+        if args.a_dense_attention_modules:
+            self.core = B.DenseBlock(core, nf)
+        else:
+            self.core = B.sequential(*core)
+
         self.upsampler0 = B.upconv_block(nf, nf, 2)
         self.upsampler1 = B.upconv_block(nf, nf, 2)
         self.HR_conv0 = B.conv_block(nf, nf, kernel_size=3, norm_type=None, act_type=act_type)
@@ -50,4 +54,4 @@ class RRDB_enhanced(nn.Module):
         x = self.HR_conv0(x)
         x = self.HR_conv1(x)
         return x
-    
+

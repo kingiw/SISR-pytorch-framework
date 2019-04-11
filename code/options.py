@@ -29,6 +29,7 @@ parser.add_argument('--pre_train_optimizer', type=str, default='...', help='pre-
 parser.add_argument('--a_nb', type=int, default=5, help='Number of RRDB in a trunk branch')
 parser.add_argument('--a_na', type=int, default=4,  help='Number of attention modules')
 parser.add_argument('--a_nf', type=int, default=64, help='Number of channel of the extrated feature by RRDB')
+parser.add_argument('--a_dense_attention_modules', action='store_true')
 
 
 # RCAN specifications
