@@ -49,12 +49,12 @@ parser.add_argument('--precision', type=str, default='single',
                     help='FP precision for test (single | half)')
 
 # Training specifications
-parser.add_argument('--reset', action='store_true',
-                    help='reset the training')
+
 parser.add_argument('--val_every', type=int, default=1000, help='do validation per N iter')
 parser.add_argument('--save_every', type=int, default=1000, help='save per N iter')
 parser.add_argument('--niters', type=int, default=12000, help='number of epochs to train')
 parser.add_argument('--batch_size', type=int, default=80, help='input batch size for training')
+parser.add_argument('--save_optimizer', action='store_true')
 
 # Optimization specifications
 parser.add_argument('--lr', type=float, default=1e-4,

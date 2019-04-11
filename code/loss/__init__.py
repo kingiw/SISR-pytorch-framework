@@ -25,7 +25,7 @@ class Loss(nn.Module):
             elif loss_type == 'L1':
                 loss_function = nn.L1Loss()
             elif loss_type == 'FaceSphere':
-                from face_sphere import FaceSphereLoss
+                from .face_sphere import FaceSphereLoss
                 loss_function = FaceSphereLoss(args.n_GPUs)
             else:
                 NotImplementedError('Loss [{:s}] not recognized.'.format(loss_type))
@@ -41,7 +41,7 @@ class Loss(nn.Module):
         
         logger.info('Loss function preparation done.')
 
-    def forward(self, fake, real, step):
+    def forward(self, fake, real, step, is_train=True):
         losses = []
         loss_sum = torch.zeros(1)
         if self.n_GPUs > 0:
@@ -55,7 +55,7 @@ class Loss(nn.Module):
             })
             loss_sum = l['weight'] * loss + loss_sum
             if self.use_tensorboard:
-                self.tb_logger.add_scalar(l['type'], loss.item(), step)
+                self.tb_logger.add_scalar(l['type'] + ("_val" if not is_train else ""), loss.item(), step)
         
         
         return loss_sum, losses

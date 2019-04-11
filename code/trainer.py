@@ -58,14 +58,15 @@ class Trainer():
                     ))
                     s = ""
                     for l in losses:
-                        s += '{}: {:.4e}'.format(l['type'], l['loss'])
+                        s += '{}: {:.4e} '.format(l['type'], l['loss'])
                     s += " Total: {:.4e}".format(loss.item())
                     logger.info(s)
                 
                 if self.iter % self.args.save_every == 0:
                     logger.info('Saving model and optimizer...')
                     torch.save(self.model.state_dict(), "../experiments/{}/model/{}.pth".format(self.args.name, self.iter))
-                    torch.save(self.optimizer.state_dict(), "../experiments/{}/optimizer/{}.pth".format(self.args.name, self.iter))
+                    if self.args.save_optimizer:
+                        torch.save(self.optimizer.state_dict(), "../experiments/{}/optimizer/{}.pth".format(self.args.name, self.iter))
                 
                 if self.iter % self.args.val_every == 0:
                     self.test()
@@ -96,7 +97,7 @@ class Trainer():
                 if (not self.args.cpu) and self.args.n_GPUs > 0:
                     lr, hr = lr.cuda(), hr.cuda()
                 sr = self.model(lr)
-                loss, losses = self.loss(sr, hr, self.iter)
+                loss, losses = self.loss(sr, hr, self.iter, is_train=False)
 
                 if i == 0:
                     avg_losses = losses
@@ -109,10 +110,10 @@ class Trainer():
                     name_list.append("{}_{}_{}".format(name[0], self.args.name, self.iter))
                     saved_img.append(sr[0])
         timer_test.hold()
-        s = ""
+        s = "\n"
         for l in avg_losses:
-            s += '{}: {:.4e}'.format(l['type'], l['loss'].item() / len(self.val_loader))
-            s += " Total: {:.4e}".format(avg_loss.item() / len(self.val_loader))
-            s += " Time Elapsed: {:.1f}".format(timer_test.release())
+            s += '{}: {:.4e} '.format(l['type'], l['loss'].item() / len(self.val_loader))
+        s += " Total: {:.4e}".format(avg_loss.item() / len(self.val_loader))
+        s += " Time Elapsed: {:.1f}\n".format(timer_test.release())
         logger.info(s)
         utils.save_image(saved_img, '../experiments/{}/results'.format(self.args.name), name_list)
