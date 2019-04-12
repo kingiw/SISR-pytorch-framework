@@ -29,7 +29,7 @@ parser.add_argument('--pre_train_optimizer', type=str, default='...', help='pre-
 parser.add_argument('--a_nb', type=int, default=5, help='Number of RRDB in a trunk branch')
 parser.add_argument('--a_na', type=int, default=4,  help='Number of attention modules')
 parser.add_argument('--a_nf', type=int, default=64, help='Number of channel of the extrated feature by RRDB')
-parser.add_argument('--a_dense_attention_modules', action='store_true')
+parser.add_argument('--a_dense_attention_modules', action='store_true', help='Only supported when na=3, mainly used for a single experiment here')
 
 
 # RCAN specifications
@@ -95,4 +95,5 @@ for arg in vars(args):
         vars(args)[arg] = True
     elif vars(args)[arg] == 'False':
         vars(args)[arg] = False
-
+if args.a_dense_attention_modules and args.a_na != 3:
+    raise NotImplementedError('Dense connection for attention module is only available for a_na = 3')

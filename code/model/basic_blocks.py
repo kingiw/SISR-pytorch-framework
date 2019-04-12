@@ -179,22 +179,6 @@ class ConcatBlock(nn.Module):
         tmpstr = tmpstr + modstr
         return tmpstr
 
-class DenseBlock(nn.Module):
-    def __init__(self, modules, nf):
-        """
-        modules is a list of module, whose input channel and output channel are the same
-        """
-        super(DenseBlock, self).__init__()
-        self.modules = modules
-        self.convs = [nn.Conv2d(nf*(i+2), nf, kernel_size=1) for i in range(len(modules))]
-    def forward(self, x):
-        x_concat = x
-        x_in = x
-        for i, module in enumerate(self.modules):
-            x_out = module(x_in)
-            x_concat = torch.cat((x_concat, x_out), dim=1)
-            x_in = self.convs[i](x_concat)
-        return x_in
             
 
 

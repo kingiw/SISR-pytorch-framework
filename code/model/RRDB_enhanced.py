@@ -24,9 +24,10 @@ class RRDB_enhanced(nn.Module):
         nb = args.a_nb
         na = args.a_na
         nf = args.a_nf
+        self.use_dense = args.a_dense_attention_modules
+        
 
         self.fea_conv = B.conv_block(3, nf, kernel_size=3, norm_type=None, act_type=None)
-        self.na = na
         core = []
         for _ in range(na):
             # Number of attention module
@@ -36,8 +37,14 @@ class RRDB_enhanced(nn.Module):
             core.append(Attention_Module(nf, nf, trunk=trunk))
             core.append(B.ResidualBlock(nf, nf))
 
-        if args.a_dense_attention_modules:
-            self.core = B.DenseBlock(core, nf)
+        if self.use_dense:
+            self.na1 = B.sequential(core[0], core[1])
+            self.conv1 = B.conv_block(nf*2, nf, kernel_size=1, mode='CNA')
+            self.na2 = B.sequential(core[2], core[3])
+            self.conv2 = B.conv_block(nf*3, nf, kernel_size=1, mode='CNA')
+            self.na3 = B.sequential(core[4], core[5])
+            self.conv3 = B.conv_block(nf*4, nf, kernel_size=1, mode='CNA')
+
         else:
             self.core = B.sequential(*core)
 
@@ -48,7 +55,18 @@ class RRDB_enhanced(nn.Module):
 
     def forward(self, x):
         x = self.fea_conv(x)
-        x = self.core(x)
+        if self.use_dense:  
+            x1_out = self.na1(x)
+            x1_cat = torch.cat((x,x1_out), 1)
+            x2_in = self.conv1(x1_cat)
+            x2_out = self.na2(x)
+            x2_cat = torch.cat((x, x1_out, x2_out), 1)
+            x3_in = self.conv2(x2_cat)
+            x3_out = self.na3(x)
+            x3_cat = torch.cat((x, x1_out, x2_out, x3_out), 1)
+            x = self.conv3(x3_cat)
+        else:
+            x = self.core(x)
         x = self.upsampler0(x)
         x = self.upsampler1(x)
         x = self.HR_conv0(x)
