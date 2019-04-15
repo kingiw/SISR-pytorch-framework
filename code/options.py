@@ -29,25 +29,22 @@ parser.add_argument('--pre_train_optimizer', type=str, default='...', help='pre-
 parser.add_argument('--a_nb', type=int, default=5, help='Number of RRDB in a trunk branch')
 parser.add_argument('--a_na', type=int, default=4,  help='Number of attention modules')
 parser.add_argument('--a_nf', type=int, default=64, help='Number of channel of the extrated feature by RRDB')
-parser.add_argument('--a_dense_attention_modules', action='store_true', help='Only supported when na=3, mainly used for a single experiment here')
+parser.add_argument('--a_dense_attention_modules', action='store_true', help='Only supported when na=3 or 4')
+parser.add_argument('--a_ca', action='store_true', help='Add Channel Attention mechanism(noted in paper of RCAN) in RRDB')
 
 
-# RCAN specifications
-parser.add_argument('--act', type=str, default='relu',
-                    help='activation function')
-parser.add_argument('--extend', type=str, default='.',
-                    help='pre-trained model directory')
-parser.add_argument('--n_resblocks', type=int, default=20,
-                    help='number of residual blocks')
-parser.add_argument('--n_feats', type=int, default=64,
-                    help='number of feature maps')
-parser.add_argument('--res_scale', type=float, default=1,
-                    help='residual scaling')
-parser.add_argument('--shift_mean', default=True,
-                    help='subtract pixel mean from the input')
-parser.add_argument('--precision', type=str, default='single',
-                    choices=('single', 'half'),
-                    help='FP precision for test (single | half)')
+# RCAN_enhanced specifications (args name start with 'b')
+parser.add_argument('--b_n_resgroups', type=int, default=6)
+parser.add_argument('--b_n_resblocks', type=int, default=8)
+parser.add_argument('--b_n_feats', type=int, default=64)
+parser.add_argument('--b_na', type=int, default=3)
+parser.add_argument('--b_dense_attention_modules', action='store_true', help='Only supported when na=3 or 4')
+
+
+# Configure on stage of Upsampling
+
+# Instance Normalization is banned
+# parser.add_argument('--use_in', action="store_true", help="Use Instance Normalization at the phase of upsampling.")
 
 # Training specifications
 
@@ -95,5 +92,5 @@ for arg in vars(args):
         vars(args)[arg] = True
     elif vars(args)[arg] == 'False':
         vars(args)[arg] = False
-if args.a_dense_attention_modules and args.a_na != 3:
-    raise NotImplementedError('Dense connection for attention module is only available for a_na = 3')
+if args.a_dense_attention_modules and (args.a_na != 3 and args.a_na != 4):
+    raise NotImplementedError('Dense connection for attention modules is only available for a_na = 3 or a_na = 4')

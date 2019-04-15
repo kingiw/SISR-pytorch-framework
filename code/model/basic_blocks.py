@@ -324,7 +324,7 @@ class RRDB(nn.Module):
     """
 
     def __init__(self, nc, kernel_size=3, gc=32, stride=1, bias=True, pad_type='zero', \
-            norm_type=None, act_type='leakyrelu', mode='CNA'):
+            norm_type=None, act_type='leakyrelu', mode='CNA', use_ca=False):
         super(RRDB, self).__init__()
         self.RDB1 = ResidualDenseBlock_5C(nc, kernel_size, gc, stride, bias, pad_type, \
             norm_type, act_type, mode)
@@ -332,11 +332,25 @@ class RRDB(nn.Module):
             norm_type, act_type, mode)
         self.RDB3 = ResidualDenseBlock_5C(nc, kernel_size, gc, stride, bias, pad_type, \
             norm_type, act_type, mode)
+        if use_ca:
+            self.avg_pool = nn.AdaptiveAvgPool2d(1)
+            self.conv_du = nn.Sequential(
+                nn.Conv2d(nc, nc // 16, kernel_size=1, padding=0, bias=True),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(nc // 16, nc, kernel_size=1, padding=0, bias=True),
+                nn.Sigmoid()
+            )
+        else:
+            self.avg_pool = None
 
     def forward(self, x):
         out = self.RDB1(x)
         out = self.RDB2(out)
         out = self.RDB3(out)
+        if self.avg_pool is not None:
+            weight = self.avg_pool(out)
+            weight = self.conv_du(weight)
+            out = out * weight
         return out.mul(0.2) + x
 
 

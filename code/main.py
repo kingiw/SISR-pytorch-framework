@@ -31,7 +31,6 @@ utils.setup_logger('base', '../experiments/{}/log'.format(args.name), utils.get_
 logger = logging.getLogger('base')
 
 logger.info(args)
-
 my_model = create_model(args)
 my_loss = Loss(args)
 trainer = Trainer(args, train_dataloader, val_dataloader, my_model, my_loss)

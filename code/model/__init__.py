@@ -8,6 +8,8 @@ def create_model(args):
 
     if model == 'RRDB_enhanced':
         from .RRDB_enhanced import RRDB_enhanced as M
+    elif model == 'RCAN_enhanced':
+        from .RCAN import RCAN_enhanced as M
     else:
         raise NotImplementedError('Model [{:s}] not recognized.'.format(model))
     m = M(args)
