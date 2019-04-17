@@ -20,7 +20,7 @@ parser.add_argument('--val_LR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/S
 parser.add_argument('--rgb_range', type=int, default=1, help='maximum value of RGB')
 
 # Model specifications
-parser.add_argument('--model', default='RRDB_enhanced')
+parser.add_argument('--model', default='RRDB_enhanced', help="RRDB_enhanced | RCAN_enhanced | SRFBN")
 parser.add_argument('--pre_train_model', type=str, default='...', help='pre-trained model path')
 parser.add_argument('--pre_train_optimizer', type=str, default='...', help='pre-trained optimizer path')
 
@@ -39,6 +39,11 @@ parser.add_argument('--b_n_resblocks', type=int, default=8)
 parser.add_argument('--b_n_feats', type=int, default=64)
 parser.add_argument('--b_na', type=int, default=3)
 parser.add_argument('--b_dense_attention_modules', action='store_true', help='Only supported when na=3 or 4')
+
+# SRFBN specifications (args name start with 'c')
+parser.add_argument('--c_nf', type=int, default=64, help='Number of features')
+parser.add_argument('--c_ns', type=int, default=4, help='Number of steps')
+parser.add_argument('--c_ng', type=int, default=4, help='Number of groups')
 
 
 # Configure on stage of Upsampling

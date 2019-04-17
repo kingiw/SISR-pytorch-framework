@@ -50,13 +50,12 @@ class Trainer():
                 timer_model.hold()
                 
                 if self.iter % self.args.print_every == 0:
-                    logger.info('Iter {}, Lr: {:.2e}     {:.1f}s+{:.1f}s'.format(
+                    s = 'Iter {}, Lr: {:.2e}  {:.1f}s+{:.1f}s  '.format(
                         self.iter,
                         self.scheduler.get_lr()[0],
                         timer_model.release(),
                         timer_data.release()
-                    ))
-                    s = ""
+                    )
                     for l in losses:
                         s += '{}: {:.4e} '.format(l['type'], l['loss'])
                     s += " Total: {:.4e}".format(loss.item())
@@ -110,10 +109,10 @@ class Trainer():
                     name_list.append("{}_{}_{}".format(name[0], self.args.name, self.iter))
                     saved_img.append(sr[0])
         timer_test.hold()
-        s = "\n"
+        s = ""
         for l in avg_losses:
             s += '{}: {:.4e} '.format(l['type'], l['loss'].item() / len(self.val_loader))
         s += " Total: {:.4e}".format(avg_loss.item() / len(self.val_loader))
-        s += " Time Elapsed: {:.1f}\n".format(timer_test.release())
+        s += " Time Elapsed: {:.1f}".format(timer_test.release())
         logger.info(s)
         utils.save_image(saved_img, '../experiments/{}/results'.format(self.args.name), name_list)

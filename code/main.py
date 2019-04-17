@@ -10,7 +10,13 @@ from model import create_model
 from loss import Loss
 from trainer import Trainer
 
+# Setup logger
+if not os.path.isdir('../experiments/' + args.name):
+    os.mkdir('../experiments/' + args.name)
+utils.setup_logger('base', '../experiments/{}/log'.format(args.name), utils.get_timestamp(), screen=True)
+logger = logging.getLogger('base')
 
+utils.show_args(args)
 torch.manual_seed(args.seed)
 
 # Init
@@ -25,12 +31,8 @@ val_set = LRHR_Dataset(args.val_LR, args.val_HR)
 val_dataloader = DataLoader(val_set, batch_size=1, shuffle=False, num_workers=args.num_workers)
 
 # Logger
-if not os.path.isdir('../experiments/' + args.name):
-    os.mkdir('../experiments/' + args.name)
-utils.setup_logger('base', '../experiments/{}/log'.format(args.name), utils.get_timestamp(), screen=True)
-logger = logging.getLogger('base')
 
-logger.info(args)
+
 my_model = create_model(args)
 my_loss = Loss(args)
 trainer = Trainer(args, train_dataloader, val_dataloader, my_model, my_loss)

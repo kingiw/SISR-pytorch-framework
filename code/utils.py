@@ -122,3 +122,11 @@ def show_img(img_tensor):
     """
     npimg = img_tensor.cpu().numpy()
     plt.imshow(np.transpose(npimg, (1,2,0)))
+
+
+def show_args(args):
+    logger = logging.getLogger('base')
+    s = "\nOptions:"
+    for k, v in vars(args).items():
+        s += "{}: {}\n".format(k, v)
+    logger.info(s)
