@@ -91,7 +91,7 @@ parser.add_argument('--print_every', type=int, default=100, help='how many batch
 
 # Test
 parser.add_argument('--test_batch_size', type=int, default=80)
-parser.add_argument('--test_src', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/HR')
+parser.add_argument('--test_src', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/LR')
 # parser.add_argument('--test_src', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALLR_Small')
 parser.add_argument('--test_dest', type=str, default='/GPUFS/nsccgz_yfdu_16/lzh/FaceSR/SISR-pytorch-framework/test')
 
@@ -104,5 +104,3 @@ for arg in vars(args):
         vars(args)[arg] = True
     elif vars(args)[arg] == 'False':
         vars(args)[arg] = False
-if args.a_dense_attention_modules and (args.a_na != 3 and args.a_na != 4):
-    raise NotImplementedError('Dense connection for attention modules is only available for a_na = 3 or a_na = 4')
