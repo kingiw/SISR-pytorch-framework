@@ -31,6 +31,7 @@ parser.add_argument('--a_na', type=int, default=4,  help='Number of attention mo
 parser.add_argument('--a_nf', type=int, default=64, help='Number of channel of the extrated feature by RRDB')
 parser.add_argument('--a_dense_attention_modules', action='store_true', help='Only supported when na=3 or 4')
 parser.add_argument('--a_ca', action='store_true', help='Add Channel Attention mechanism(noted in paper of RCAN) in RRDB')
+parser.add_argument('--old', action='store_true', help='This option is used for compatibility of the pretrain model in old version.')
 
 
 # RCAN_enhanced specifications (args name start with 'b')

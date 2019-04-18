@@ -35,4 +35,8 @@ with torch.no_grad():
         utils.save_image(sr, dest, name)
         if (i+1) % 10 == 0:
             print("Test Progess [{}/{}]".format((i+1) * args.test_batch_size, len(dataset)))
+
+        if (i+1) * args.test_batch_size > len(dataset):
+            print("Done")
+            break
     
