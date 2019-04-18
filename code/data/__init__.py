@@ -29,6 +29,7 @@ class Dataset(data.Dataset):
     def __len__(self):
         return len(self.filelist)
 
+
 class LRHR_Dataset(data.Dataset):
     """
     LR image and HR image should have the same filename

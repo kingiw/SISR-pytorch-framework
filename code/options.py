@@ -89,6 +89,13 @@ parser.add_argument('--loss', type=str, default='1*L1', help='loss function conf
 # Other specifications
 parser.add_argument('--print_every', type=int, default=100, help='how many batches to wait before logging training status')
 
+# Test
+parser.add_argument('--test_batch_size', type=int, default=80)
+parser.add_argument('--test_src', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/HR')
+# parser.add_argument('--test_src', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALLR_Small')
+parser.add_argument('--test_dest', type=str, default='/GPUFS/nsccgz_yfdu_16/lzh/FaceSR/SISR-pytorch-framework/test')
+
+
 args = parser.parse_args()
 
 

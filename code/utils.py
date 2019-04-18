@@ -106,10 +106,14 @@ def make_scheduler(args, optimizer):
 
 def save_image(img_tensor_list, path, filename_list, img_type='jpg'):
     """
-    img_tensor_list -- a list of Tensor(channel * H * W)
+    img_tensor_list -- a list of Tensor(channel * H * W) or a 4-D Tensor (b * c * H * W)
     path -- path of saving directory
     filename_list -- a list with a **batch** number of name
     """
+    if isinstance(img_tensor_list, torch.Tensor):
+        assert len(img_tensor_list.shape) == 4
+        img_tensor_list = list(img_tensor_list)
+
     assert(len(img_tensor_list) == len(filename_list))
     for i, filename in enumerate(filename_list):
         save_filename = filename + '.' + img_type
