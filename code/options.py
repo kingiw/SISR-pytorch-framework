@@ -25,21 +25,21 @@ parser.add_argument('--pre_train_model', type=str, default='...', help='pre-trai
 parser.add_argument('--pre_train_optimizer', type=str, default='...', help='pre-trained optimizer path')
 
 
-# RRDB_enhanced specifications (args name start with 'a')
+# RRDB_enhanced and RRDB_Net specifications (args name start with 'a')
 parser.add_argument('--a_nb', type=int, default=5, help='Number of RRDB in a trunk branch')
 parser.add_argument('--a_na', type=int, default=4,  help='Number of attention modules')
 parser.add_argument('--a_nf', type=int, default=64, help='Number of channel of the extrated feature by RRDB')
-parser.add_argument('--a_dense_attention_modules', action='store_true', help='Only supported when na=3 or 4')
+parser.add_argument('--a_dense_attention_modules', action='store_true')
 parser.add_argument('--a_ca', action='store_true', help='Add Channel Attention mechanism(noted in paper of RCAN) in RRDB')
 parser.add_argument('--old', action='store_true', help='This option is used for compatibility of the pretrain model in old version.')
 
 
-# RCAN_enhanced specifications (args name start with 'b')
+# RCAN_enhanced and RCAN specifications (args name start with 'b')
 parser.add_argument('--b_n_resgroups', type=int, default=6)
 parser.add_argument('--b_n_resblocks', type=int, default=8)
 parser.add_argument('--b_n_feats', type=int, default=64)
 parser.add_argument('--b_na', type=int, default=3)
-parser.add_argument('--b_dense_attention_modules', action='store_true', help='Only supported when na=3 or 4')
+parser.add_argument('--b_dense_attention_modules', action='store_true')
 
 # SRFBN specifications (args name start with 'c')
 parser.add_argument('--c_nf', type=int, default=64, help='Number of features')
@@ -54,10 +54,10 @@ parser.add_argument('--c_ng', type=int, default=4, help='Number of groups')
 
 # Training specifications
 
-parser.add_argument('--val_every', type=int, default=1000, help='do validation per N iter')
-parser.add_argument('--save_every', type=int, default=1000, help='save per N iter')
+parser.add_argument('--val_every', type=int, default=2500, help='do validation per N iter')
+parser.add_argument('--save_every', type=int, default=2500, help='save per N iter')
 parser.add_argument('--niters', type=int, default=12000, help='number of epochs to train')
-parser.add_argument('--batch_size', type=int, default=80, help='input batch size for training')
+parser.add_argument('--batch_size', type=int, default=32, help='input batch size for training')
 parser.add_argument('--save_optimizer', action='store_true')
 
 # Optimization specifications
@@ -88,7 +88,7 @@ parser.add_argument('--loss', type=str, default='1*L1', help='loss function conf
 
 
 # Other specifications
-parser.add_argument('--print_every', type=int, default=100, help='how many batches to wait before logging training status')
+parser.add_argument('--print_every', type=int, default=500, help='how many batches to wait before logging training status')
 
 # Test
 parser.add_argument('--test_batch_size', type=int, default=80)
