@@ -31,8 +31,6 @@ val_set = LRHR_Dataset(args.val_LR, args.val_HR)
 val_dataloader = DataLoader(val_set, batch_size=1, shuffle=False, num_workers=args.num_workers)
 
 # Logger
-
-
 my_model = create_model(args)
 my_loss = Loss(args)
 trainer = Trainer(args, train_dataloader, val_dataloader, my_model, my_loss)

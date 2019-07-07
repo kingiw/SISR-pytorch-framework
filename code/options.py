@@ -3,6 +3,7 @@ import argparse
 parser = argparse.ArgumentParser(description='No description')
 
 parser.add_argument('--name', type=str, default='unknown')
+parser.add_argument('--experiment_path', type=str, default='...')
 
 # Hardware specifications
 parser.add_argument('--cpu', action='store_true', help='use cpu only')
@@ -13,10 +14,10 @@ parser.add_argument('--num_workers', type=int, default=24)
 
 # Data specifications
 # parser.add_argument('--train_data_path', type=str, default='...')
-parser.add_argument('--train_HR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/HR', help='path to HR image of training set')
-parser.add_argument('--train_LR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/LR', help='path to LR image of training set')
-parser.add_argument('--val_HR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALHR', help='path to HR image of validation set')
-parser.add_argument('--val_LR', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALLR', help='path to LR image of validation set')
+parser.add_argument('--train_HR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/train/hr', help='path to HR image of training set')
+parser.add_argument('--train_LR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/train/lr', help='path to LR image of training set')
+parser.add_argument('--val_HR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/val/hr', help='path to HR image of validation set')
+parser.add_argument('--val_LR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/val/lr', help='path to LR image of validation set')
 parser.add_argument('--rgb_range', type=int, default=1, help='maximum value of RGB')
 
 # Model specifications
@@ -31,7 +32,7 @@ parser.add_argument('--a_na', type=int, default=4,  help='Number of attention mo
 parser.add_argument('--a_nf', type=int, default=64, help='Number of channel of the extrated feature by RRDB')
 parser.add_argument('--a_dense_attention_modules', action='store_true')
 parser.add_argument('--a_ca', action='store_true', help='Add Channel Attention mechanism(noted in paper of RCAN) in RRDB')
-parser.add_argument('--old', action='store_true', help='This option is used for compatibility of the pretrain model in old version.')
+# parser.add_argument('--old', action='store_true', help='This option is used for compatibility of the pretrain model in old version.')
 
 
 # RCAN_enhanced and RCAN specifications (args name start with 'b')
@@ -84,7 +85,19 @@ parser.add_argument('--weight_decay', type=float, default=0,
                     help='weight decay')
 
 # Loss specifications
-parser.add_argument('--loss', type=str, default='1*L1', help='loss function configuration, you should specify like: w1*L1+w2*FaceSphere+...')
+parser.add_argument('--loss', type=str, default='1*L1', help='loss function configuration, you should specify like: w1*L1+w2*FaceSphere+w3*GanLoss')
+
+# GAN related
+parser.add_argument('--gan_type', type=str, default='ragan')
+parser.add_argument('--discriminator', type=str, default='discriminator_vgg_128', help='discriminator model, only used when GanLoss is specified')
+parser.add_argument('--pretrained_netD', type=str, default=None, help='path of a pretrained discriminator')
+parser.add_argument('--weight_decay_D', type=float, default=0)
+parser.add_argument('--beta1_D', type=float, default=0.9)
+parser.add_argument('--beta2_D', type=float, default=0.99)
+parser.add_argument('--lr_D', type=float, default=1e-4)
+parser.add_argument('--save_D_every', type=int, default=2500, help='save discriminator every N step')
+parser.add_argument('--save_D_path', type=str, default='...')
+
 
 
 # Other specifications

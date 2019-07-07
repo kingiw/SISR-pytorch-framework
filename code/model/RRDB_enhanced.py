@@ -27,7 +27,7 @@ class RRDB_enhanced(nn.Module):
         
         self.use_dense = args.a_dense_attention_modules
         self.na = na
-        self.old_version = args.old
+        # self.old_version = args.old
         
 
         self.fea_conv = B.conv_block(3, nf, kernel_size=3, norm_type=None, act_type=None)
@@ -46,30 +46,30 @@ class RRDB_enhanced(nn.Module):
 
         if self.use_dense:
 
-            if self.old_version:
-                if self.na == 3:    # 3 densely connected attention modules
-                    self.na1 = B.sequential(self.core[0], self.core[1])
-                    self.conv1 = B.conv_block(nf*2, nf, kernel_size=1, norm_type= None, mode='CNA')
-                    self.na2 = B.sequential(self.core[2], self.core[3])
-                    self.conv2 = B.conv_block(nf*3, nf, kernel_size=1, norm_type=None, mode='CNA')
-                    self.na3 = B.sequential(self.core[4], self.core[5])
-                    self.conv3 = B.conv_block(nf*4, nf, kernel_size=1, norm_type=None, mode='CNA')
-                elif self.na == 4: # 4 densely connected attention modules
-                    self.na1 = B.sequential(self.core[0], self.core[1])
-                    self.conv1 = B.conv_block(nf*2, nf, kernel_size=1, norm_type= None, mode='CNA')
-                    self.na2 = B.sequential(self.core[2], self.core[3])
-                    self.conv2 = B.conv_block(nf*3, nf, kernel_size=1, norm_type=None, mode='CNA')
-                    self.na3 = B.sequential(self.core[4], self.core[5])
-                    self.conv3 = B.conv_block(nf*4, nf, kernel_size=1, norm_type=None, mode='CNA')
-                    self.na4 = B.sequential(self.core[6], self.core[7])
-                    self.conv4 = B.conv_block(nf*5, nf, kernel_size=1, norm_type=None, mode='CNA')
-                else:
-                    raise NotImplementedError("...")
-                self.core = None
-            else:
-                self.convList = nn.ModuleList()
-                for i in range(na):
-                    self.convList.append(B.conv_block(nf*(i+2), nf, kernel_size=1, norm_type=None, mode='CNA'))
+            # if self.old_version:
+            #     if self.na == 3:    # 3 densely connected attention modules
+            #         self.na1 = B.sequential(self.core[0], self.core[1])
+            #         self.conv1 = B.conv_block(nf*2, nf, kernel_size=1, norm_type= None, mode='CNA')
+            #         self.na2 = B.sequential(self.core[2], self.core[3])
+            #         self.conv2 = B.conv_block(nf*3, nf, kernel_size=1, norm_type=None, mode='CNA')
+            #         self.na3 = B.sequential(self.core[4], self.core[5])
+            #         self.conv3 = B.conv_block(nf*4, nf, kernel_size=1, norm_type=None, mode='CNA')
+            #     elif self.na == 4: # 4 densely connected attention modules
+            #         self.na1 = B.sequential(self.core[0], self.core[1])
+            #         self.conv1 = B.conv_block(nf*2, nf, kernel_size=1, norm_type= None, mode='CNA')
+            #         self.na2 = B.sequential(self.core[2], self.core[3])
+            #         self.conv2 = B.conv_block(nf*3, nf, kernel_size=1, norm_type=None, mode='CNA')
+            #         self.na3 = B.sequential(self.core[4], self.core[5])
+            #         self.conv3 = B.conv_block(nf*4, nf, kernel_size=1, norm_type=None, mode='CNA')
+            #         self.na4 = B.sequential(self.core[6], self.core[7])
+            #         self.conv4 = B.conv_block(nf*5, nf, kernel_size=1, norm_type=None, mode='CNA')
+            #     else:
+            #         raise NotImplementedError("...")
+            #     self.core = None
+            # else:
+            self.convList = nn.ModuleList()
+            for i in range(na):
+                self.convList.append(B.conv_block(nf*(i+2), nf, kernel_size=1, norm_type=None, mode='CNA'))
         else:
             self.core = B.sequential(*self.core)
 
@@ -82,37 +82,37 @@ class RRDB_enhanced(nn.Module):
         x = self.fea_conv(x)
         if self.use_dense:
             
-            if self.old_version:
-                if self.na == 3:
-                    x1_out = self.na1(x)
-                    x1_cat = torch.cat((x,x1_out), 1)
-                    x2_in = self.conv1(x1_cat)
-                    x2_out = self.na2(x)
-                    x2_cat = torch.cat((x, x1_out, x2_out), 1)
-                    x3_in = self.conv2(x2_cat)
-                    x3_out = self.na3(x)
-                    x3_cat = torch.cat((x, x1_out, x2_out, x3_out), 1)
-                    x = self.conv3(x3_cat)
-                elif self.na == 4:
-                    x1_out = self.na1(x)
-                    x1_cat = torch.cat((x,x1_out), 1)
-                    x2_in = self.conv1(x1_cat)
-                    x2_out = self.na2(x)
-                    x2_cat = torch.cat((x, x1_out, x2_out), 1)
-                    x3_in = self.conv2(x2_cat)
-                    x3_out = self.na3(x)
-                    x3_cat = torch.cat((x, x1_out, x2_out, x3_out), 1)
-                    x4_in = self.conv3(x3_cat)
-                    x4_out = self.na4(x4_in)
-                    x4_cat = torch.cat((x, x1_out, x2_out, x3_out, x4_out), 1)
-                    x = self.conv4(x4_cat)
-            else:
-                x_out_list = [x]
-                for i in range(self.na):
-                    x_out = self.core[i+i+1](self.core[i+i](x))
-                    x_out_list.append(x_out)
-                    x_cat = torch.cat(x_out_list, 1)
-                    x = self.convList[i](x_cat)
+            # if self.old_version:
+            #     if self.na == 3:
+            #         x1_out = self.na1(x)
+            #         x1_cat = torch.cat((x,x1_out), 1)
+            #         x2_in = self.conv1(x1_cat)
+            #         x2_out = self.na2(x)
+            #         x2_cat = torch.cat((x, x1_out, x2_out), 1)
+            #         x3_in = self.conv2(x2_cat)
+            #         x3_out = self.na3(x)
+            #         x3_cat = torch.cat((x, x1_out, x2_out, x3_out), 1)
+            #         x = self.conv3(x3_cat)
+            #     elif self.na == 4:
+            #         x1_out = self.na1(x)
+            #         x1_cat = torch.cat((x,x1_out), 1)
+            #         x2_in = self.conv1(x1_cat)
+            #         x2_out = self.na2(x)
+            #         x2_cat = torch.cat((x, x1_out, x2_out), 1)
+            #         x3_in = self.conv2(x2_cat)
+            #         x3_out = self.na3(x)
+            #         x3_cat = torch.cat((x, x1_out, x2_out, x3_out), 1)
+            #         x4_in = self.conv3(x3_cat)
+            #         x4_out = self.na4(x4_in)
+            #         x4_cat = torch.cat((x, x1_out, x2_out, x3_out, x4_out), 1)
+            #         x = self.conv4(x4_cat)
+            # else:
+            x_out_list = [x]
+            for i in range(self.na):
+                x_out = self.core[i+i+1](self.core[i+i](x))
+                x_out_list.append(x_out)
+                x_cat = torch.cat(x_out_list, 1)
+                x = self.convList[i](x_cat)
         
         else:
             x = self.core(x)

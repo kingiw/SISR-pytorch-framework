@@ -105,7 +105,7 @@ class Trainer():
                         avg_losses[k]['loss'] += losses[k]['loss']
                 avg_loss += loss
 
-                if name[0][:3] == "000":
+                if name[0][:4] == "6000": # Only save the first 10 images in validation set
                     name_list.append("{}_{}_{}".format(name[0], self.args.name, self.iter))
                     saved_img.append(sr[0])
         timer_test.hold()
