@@ -125,7 +125,7 @@ class FaceSphereLoss(nn.Module):
     def __init__(self, n_GPUs):
         super(FaceSphereLoss, self).__init__()
         self.features = Sphere20aFeatureExtractor(
-            model_path = "/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/pretrained/sphere20a_20171020.pth",
+            model_path = "/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/sphere20a_20171020.pth",
             n_GPUs = n_GPUs
         )
         self.criterion = nn.CosineEmbeddingLoss()

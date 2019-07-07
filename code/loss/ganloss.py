@@ -1,20 +1,22 @@
 import torch
 import torch.nn as nn
 from torch.nn.parallel import DataParallel
-import discriminator
+from loss.discriminator import Discriminator_VGG_128
 
 class GANLoss(nn.Module):
     def __init__(self, args):
+        super(GANLoss, self).__init__()
         # By default, discriminator will be updated every step
+
         if args.discriminator == 'discriminator_vgg_128':
-            self.netD = discriminator.Discriminator_VGG_128(in_nc=3, nf=64)
+            self.netD = Discriminator_VGG_128(in_nc=3, nf=64)
         else:
             raise NotImplementedError('Discriminator model [{:s}] not recognized'.format(args.discriminator))
 
         if args.pretrained_netD is not None:
             self.netD.load_state_dict(torch.load(args.pretrained_netD))
         if not args.cpu:
-            self.netD = self.netD.to(self.device)
+            self.netD = self.netD.to('cuda')
         if args.n_GPUs > 1:
             self.netD = DataParallel(self.netD)
 
@@ -83,9 +85,9 @@ class GANLoss(nn.Module):
     def forward(self, fake, real, step=0, is_train=False):
         # 计算loss值，GAN的LOSS计算是根据当前的输入判断真假
         self.netD.train() if is_train else self.netD.eval()
-
-        pred_d_real = self.netD(self.real)
-        pred_d_fake = self.netD(self.fake)
+        print("REAL SIZE {}".format(real.size()))
+        pred_d_real = self.netD(real)
+        pred_d_fake = self.netD(fake)
 
         if self.gan_type == 'gan':
             target_real = self.get_target_label(pred_d_fake, True)

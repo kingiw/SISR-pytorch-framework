@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 import logging
 import os
-import ganloss
+import loss.ganloss as ganloss
+
 
 
 logger = logging.getLogger('base')
@@ -29,7 +30,7 @@ class Loss(nn.Module):
                 from .face_sphere import FaceSphereLoss
                 loss_function = FaceSphereLoss(args.n_GPUs)
             elif loss_type == 'GanLoss':
-                loss_function =  ganloss.GANLoss(args) 
+                loss_function = ganloss.GANLoss(args) 
             else:
                 NotImplementedError('Loss [{:s}] not recognized.'.format(loss_type))
             self.loss.append({

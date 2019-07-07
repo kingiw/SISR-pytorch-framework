@@ -14,14 +14,14 @@ parser.add_argument('--num_workers', type=int, default=24)
 
 # Data specifications
 # parser.add_argument('--train_data_path', type=str, default='...')
-parser.add_argument('--train_HR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/train/hr', help='path to HR image of training set')
-parser.add_argument('--train_LR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/train/lr', help='path to LR image of training set')
-parser.add_argument('--val_HR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/val/hr', help='path to HR image of validation set')
-parser.add_argument('--val_LR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/val/lr', help='path to LR image of validation set')
+parser.add_argument('--train_HR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/train/smallhr', help='path to HR image of training set')
+parser.add_argument('--train_LR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/train/smalllr', help='path to LR image of training set')
+parser.add_argument('--val_HR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/val/smallhr', help='path to HR image of validation set')
+parser.add_argument('--val_LR', type=str, default='/BIGDATA1/nsccgz_yfdu_5/lzh/IAA/ffhq/val/smalllr', help='path to LR image of validation set')
 parser.add_argument('--rgb_range', type=int, default=1, help='maximum value of RGB')
 
 # Model specifications
-parser.add_argument('--model', default='RRDB_enhanced', help="RRDB_enhanced | RCAN_enhanced | SRFBN")
+parser.add_argument('--model', default='RRDB_enhanced', help="RRDB | RRDB_enhanced | RCAN_enhanced | SRFBN ")
 parser.add_argument('--pre_train_model', type=str, default='...', help='pre-trained model path')
 parser.add_argument('--pre_train_optimizer', type=str, default='...', help='pre-trained optimizer path')
 
@@ -85,7 +85,7 @@ parser.add_argument('--weight_decay', type=float, default=0,
                     help='weight decay')
 
 # Loss specifications
-parser.add_argument('--loss', type=str, default='1*L1', help='loss function configuration, you should specify like: w1*L1+w2*FaceSphere+w3*GanLoss')
+parser.add_argument('--loss', type=str, default='1*L1+1*FaceSphere+1*GanLoss', help='loss function configuration, you should specify like: w1*L1+w2*FaceSphere+w3*GanLoss')
 
 # GAN related
 parser.add_argument('--gan_type', type=str, default='ragan')
@@ -103,11 +103,11 @@ parser.add_argument('--save_D_path', type=str, default='...')
 # Other specifications
 parser.add_argument('--print_every', type=int, default=500, help='how many batches to wait before logging training status')
 
-# Test
-parser.add_argument('--test_batch_size', type=int, default=80)
-parser.add_argument('--test_src', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/LR')
-# parser.add_argument('--test_src', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALLR_Small')
-parser.add_argument('--test_dest', type=str, default='/GPUFS/nsccgz_yfdu_16/lzh/FaceSR/SISR-pytorch-framework/test')
+# Test, abandoned in IAA project
+# parser.add_argument('--test_batch_size', type=int, default=80)
+# parser.add_argument('--test_src', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/LR')
+# # parser.add_argument('--test_src', type=str, default='/GPUFS/nsccgz_yfdu_16/ouyry/SISRC/FaceSR-ESRGAN/dataset/CelebA/VALLR_Small')
+# parser.add_argument('--test_dest', type=str, default='/GPUFS/nsccgz_yfdu_16/lzh/FaceSR/SISR-pytorch-framework/test')
 
 
 args = parser.parse_args()

@@ -11,6 +11,8 @@ from loss import Loss
 from trainer import Trainer
 
 # Setup logger
+if not os.path.isdir('../experiments/'):
+    os.mkdir('../experiments')
 if not os.path.isdir('../experiments/' + args.name):
     os.mkdir('../experiments/' + args.name)
 utils.setup_logger('base', '../experiments/{}/log'.format(args.name), utils.get_timestamp(), screen=True)

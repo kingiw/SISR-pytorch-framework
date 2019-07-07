@@ -12,7 +12,7 @@ def create_model(args):
         from .RRDB_Net import RRDB_Net as M
     elif model == 'RCAN':
         from .RCAN import RCAN as M
-    elif model == 'RCAN_enhanced'   # Densely connected(optional)
+    elif model == 'RCAN_enhanced':   # Densely connected(optional)
         from .RCAN import RCAN_enhanced as M
     elif model == 'SRFBN':
         from .SRFBN import SRFBN as M
