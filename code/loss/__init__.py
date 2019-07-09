@@ -8,6 +8,13 @@ import loss.ganloss as ganloss
 
 logger = logging.getLogger('base')
 
+class RMSELoss(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.mse = nn.MSELoss()
+    def forward(self, x, y):
+        return torch.sqrt(self.mse(x, y))
+
 class Loss(nn.Module):
     def __init__(self, args):
         super(Loss, self).__init__()
@@ -31,6 +38,8 @@ class Loss(nn.Module):
                 loss_function = FaceSphereLoss(args.n_GPUs)
             elif loss_type == 'GanLoss':
                 loss_function = ganloss.GANLoss(args) 
+            elif loss_type == 'RMSE':
+                loss_function = RMSELoss()
             else:
                 NotImplementedError('Loss [{:s}] not recognized.'.format(loss_type))
             self.loss.append({
@@ -51,7 +60,11 @@ class Loss(nn.Module):
         if self.n_GPUs > 0:
             loss_sum = loss_sum.cuda()
         for i, l in enumerate(self.loss):
-            loss = l['function'](fake, real)
+            loss = 0
+            if l['type'] == 'GanLoss':
+                loss = l['function'](fake, real, step, is_train)
+            else:
+                loss = l['function'](fake, real)
             losses.append({
                 'loss': loss,
                 'type': l['type'],

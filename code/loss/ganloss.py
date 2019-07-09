@@ -3,6 +3,14 @@ import torch.nn as nn
 from torch.nn.parallel import DataParallel
 from loss.discriminator import Discriminator_VGG_128
 
+
+# Loss 接收两个参数 input和target
+# input是由Discriminator提取得到的特征向量
+# target表示input的真/假的取反, 即假如input是真实的，则target是False；假如input是假的，则target是True
+# 我们希望input是由假图输入到discriminator得到的特征，则input应该是尽可能多0。反之输入真图到discriminator得到的特征应该尽可能多1。
+# 简单来说就是用一个loss判定discriminator给出的判断是否远离了事实。
+# 在gan/ragan中，target是一个和input相同size的全0or全1的向量
+# 在wgan-gp中，target就是True或False
 class GANLoss(nn.Module):
     def __init__(self, args):
         super(GANLoss, self).__init__()
@@ -28,13 +36,6 @@ class GANLoss(nn.Module):
             self.save_D_path = args.save_D_path
 
         # Loss Type
-        # Loss 接收两个参数 input和target
-        # input是由Discriminator提取得到的特征向量
-        # target表示input的真/假的取反, 即假如input是真实的，则target是False；假如input是假的，则target是True
-        # 我们希望input是由假图输入到discriminator得到的特征，则input应该是尽可能多0。反之输入真图到discriminator得到的特征应该尽可能多1。
-        # 简单来说就是用一个loss判定discriminator给出的判断是否远离了事实。
-        # 在gan/ragan中，target是一个和input相同size的全0or全1的向量
-        # 在wgan-gp中，target就是True或False
         self.gan_type = args.gan_type
         if self.gan_type == 'gan' or self.gan_type == 'ragan':
             self.loss = nn.BCEWithLogitsLoss()
@@ -85,7 +86,7 @@ class GANLoss(nn.Module):
     def forward(self, fake, real, step=0, is_train=False):
         # 计算loss值，GAN的LOSS计算是根据当前的输入判断真假
         self.netD.train() if is_train else self.netD.eval()
-        print("REAL SIZE {}".format(real.size()))
+        # print("REAL SIZE {}".format(real.size())) # torch.Size([32, 3, 112, 96])
         pred_d_real = self.netD(real)
         pred_d_fake = self.netD(fake)
 
