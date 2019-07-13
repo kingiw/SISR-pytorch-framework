@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch.nn.parallel import DataParallel
 from loss.discriminator import Discriminator_VGG_128
+import copy
 
 
 # Loss 接收两个参数 input和target
@@ -73,7 +74,7 @@ class GANLoss(nn.Module):
             p.requires_grad = True
 
         self.optimizer_D.zero_grad()
-        loss.backward()
+        loss.backward(retain_graph=True)
         self.optimizer_D.step()
         
         if step % self.save_D_every == 0:
@@ -101,8 +102,8 @@ class GANLoss(nn.Module):
                 self.loss(pred_d_fake - torch.mean(pred_d_real), target_real) + 
                 self.loss(pred_d_real - torch.mean(pred_d_fake), target_fake)
             ) / 2
-
+        loss_copy = torch.tensor(loss.item())
         if is_train:
             self.update_D(loss, step)
-        return loss
+        return loss_copy
 
